@@ -9,6 +9,13 @@ __pycache__/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Visualization outputs (keep important ones, ignore temporary)
+# Uncomment if you want to ignore all PNG files:
+# *.png
+# Or ignore only in specific directories:
+# notebooks/temp_*.png
+# notebooks/*_temp.png
+
 # Environments
 .env
 .envrc
