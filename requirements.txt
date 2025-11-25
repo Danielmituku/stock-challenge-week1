@@ -20,6 +20,7 @@ scipy>=1.10.0
 # Financial Data and Technical Analysis
 yfinance>=0.2.18
 TA-Lib>=0.4.28
+pynance>=1.0.0
 
 # Jupyter Notebooks
 jupyter>=1.0.0
