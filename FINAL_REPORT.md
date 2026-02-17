@@ -29,10 +29,7 @@ This project analyzes the relationship between financial news sentiment and stoc
 ### The Challenge
 **Can we predict stock market movements by analyzing the sentiment of financial news?**
 
-Financial institutions spend billions on market research. Understanding the relationship between news sentiment and price movements could provide:
-- **Early warning signals** for price changes
-- **Quantified sentiment metrics** for trading decisions
-- **Risk assessment tools** for portfolio management
+Financial institutions spend billions on market research. Understanding the relationship between news sentiment and price movements could provide early warning signals for price changes, quantified sentiment metrics for trading decisions, and risk assessment tools for portfolio management.
 
 ### Stocks Analyzed
 | Ticker | Company | Sector |
@@ -313,9 +310,12 @@ Sentiment Category Breakdown:
 | GOOG | 0.09% | 1.73% | 1.04 | -11.10% |
 
 **Correlation Analysis Limitation:**
-- Only 0.05-0.13% of trading days had matching news data
-- Insufficient sample sizes prevented statistically significant conclusions
-- This is an important finding: data alignment is critical for correlation studies
+
+| Issue | Impact |
+|-------|--------|
+| 0.05-0.13% data overlap | Insufficient sample sizes |
+| Missing timestamps | Cannot align news to prices |
+| Lesson learned | Data alignment is critical |
 
 ### 4.2 Week 12 Improvement Metrics
 
@@ -354,20 +354,11 @@ Sentiment Category Breakdown:
 
 ### Value for Finance Sector
 
-**1. Risk Reduction Through Testing**
-- 35 unit tests ensure calculation accuracy
-- Critical for financial applications where errors cost money
-- Example: RSI calculation verified against known values
-
-**2. Maintainability for Long-term Use**
-- Modular code structure enables easy updates
-- Type hints reduce bugs during modifications
-- Documentation enables team collaboration
-
-**3. Stakeholder Accessibility**
-- Interactive dashboard enables non-technical users to explore data
-- No coding required to analyze different stocks or time periods
-- Immediate insights without data science expertise
+| Value Area | Benefit | Evidence |
+|------------|---------|----------|
+| Risk Reduction | Calculation accuracy | 35 unit tests, verified RSI |
+| Maintainability | Easy updates | Modular code, type hints |
+| Accessibility | Non-technical use | Interactive dashboard |
 
 ### Quantified Portfolio Value
 
@@ -400,16 +391,20 @@ Overlap for Analysis: |░░░░░░░░░░░░░░░░░░░
 
 ### What This Project Does NOT Prove
 
-1. ❌ Does NOT prove news sentiment predicts stock prices
-2. ❌ Does NOT provide trading recommendations
-3. ❌ Does NOT account for market-wide factors
+| Statement | Explanation |
+|-----------|-------------|
+| Does NOT prove causation | News sentiment may correlate but not cause price changes |
+| Does NOT provide trading advice | This is educational analysis only |
+| Does NOT account for all factors | Market-wide events are not included |
 
 ### What This Project DOES Demonstrate
 
-1. ✅ End-to-end data science workflow
-2. ✅ Professional software engineering practices
-3. ✅ Honest reporting of limitations
-4. ✅ Production-ready code structure
+| Capability | Evidence |
+|------------|----------|
+| End-to-end workflow | Data loading to visualization pipeline |
+| Software engineering | Modular code, type hints, tests |
+| Honest reporting | Limitations clearly documented |
+| Production-ready code | CI/CD pipeline, 91% coverage |
 
 ---
 
@@ -490,27 +485,14 @@ stock-challenge-week1/
 
 ## 9. Conclusion
 
-This project demonstrates the journey from initial data analysis to a production-ready portfolio piece. Key accomplishments:
+This project demonstrates the journey from initial data analysis to a production-ready portfolio piece.
 
-### Technical Excellence
-- **8 modular packages** with full type hints
-- **35 unit tests** with 91% coverage
-- **Interactive dashboard** for stakeholder engagement
-
-### Professional Standards
-- Clean, documented, maintainable code
-- Comprehensive testing and validation
-- Honest reporting of limitations
-
-### Finance Sector Readiness
-- Reliable calculations verified by tests
-- Accessible visualizations for non-technical users
-- Production-ready architecture
-
-### Honest Assessment
-- Data limitations prevented correlation conclusions
-- This finding itself demonstrates rigorous data science practice
-- Better data would enable the intended analysis
+| Category | Accomplishments |
+|----------|-----------------|
+| Technical Excellence | 8 modular packages, 35 tests (91% coverage), interactive dashboard |
+| Professional Standards | Clean code, comprehensive testing, honest reporting |
+| Finance Readiness | Verified calculations, accessible visualizations, production architecture |
+| Honest Assessment | Data limitations identified, rigorous practice demonstrated |
 
 ---
 

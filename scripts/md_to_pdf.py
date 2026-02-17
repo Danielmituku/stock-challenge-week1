@@ -19,6 +19,7 @@ from pathlib import Path
 
 try:
     from fpdf import FPDF
+    from fpdf.enums import XPos, YPos
 except ImportError:
     print("Error: fpdf2 package not installed")
     print("Install with: pip install fpdf2")
@@ -43,6 +44,8 @@ def sanitize_text(text: str) -> str:
         '•': '*',  # bullet
         '→': '->',  # arrow
         '←': '<-',  # arrow
+        '▼': 'v',  # down arrow
+        '▲': '^',  # up arrow
         '✓': '[x]',  # checkmark
         '✗': '[ ]',  # x mark
         '✅': '[DONE]',  # checkmark emoji
@@ -59,8 +62,47 @@ def sanitize_text(text: str) -> str:
         '≠': '!=',  # not equal
         '≤': '<=',  # less than or equal
         '≥': '>=',  # greater than or equal
+        '∞': 'inf',  # infinity
         '\u200b': '',  # zero-width space
         '\xa0': ' ',  # non-breaking space
+        # Box drawing characters
+        '┌': '+',
+        '┐': '+',
+        '└': '+',
+        '┘': '+',
+        '├': '+',
+        '┤': '+',
+        '┬': '+',
+        '┴': '+',
+        '┼': '+',
+        '─': '-',
+        '│': '|',
+        '═': '=',
+        '║': '|',
+        '╔': '+',
+        '╗': '+',
+        '╚': '+',
+        '╝': '+',
+        '█': '#',
+        '▓': '#',
+        '▒': '=',
+        '░': '-',
+        '█': '#',
+        '▌': '|',
+        '▐': '|',
+        '▀': '-',
+        '▄': '_',
+        '●': 'o',
+        '○': 'o',
+        '◆': '*',
+        '◇': '*',
+        '■': '#',
+        '□': '[ ]',
+        '▪': '*',
+        '▫': '-',
+        '★': '*',
+        '☆': '*',
+        'σ': 'sigma',
     }
     
     for old, new in replacements.items():
@@ -188,7 +230,7 @@ def convert_md_to_pdf(input_file: str, output_file: str = None) -> str:
                             code_line = sanitize_text(code_line)[:85]
                             if pdf.get_y() > 265:
                                 pdf.add_page()
-                            pdf.cell(0, 5, code_line, ln=True, fill=True)
+                            pdf.cell(0, 5, code_line, new_x=XPos.LMARGIN, new_y=YPos.NEXT, fill=True)
                         pdf.ln(3)
                     code_lines = []
                     in_code = False
@@ -213,26 +255,48 @@ def convert_md_to_pdf(input_file: str, output_file: str = None) -> str:
             elif line.strip().startswith('|--'):
                 continue
             elif in_table:
-                # Write table
+                # Write table with dynamic column widths
                 if table_headers:
                     num_cols = len(table_headers)
-                    col_w = min(30, 180 // max(num_cols, 1))
+                    page_width = 180
+                    
+                    # Calculate max content length for each column
+                    col_max_lens = [len(sanitize_text(str(h))) for h in table_headers]
+                    for row in table_rows:
+                        for i, c in enumerate(row):
+                            if i < len(col_max_lens):
+                                col_max_lens[i] = max(col_max_lens[i], len(sanitize_text(str(c))))
+                    
+                    # Calculate proportional widths
+                    total_chars = sum(col_max_lens) or 1
+                    col_widths = [max(20, min(60, int(page_width * (l / total_chars)))) for l in col_max_lens]
+                    
+                    # Adjust to fit page
+                    total_width = sum(col_widths)
+                    if total_width > page_width:
+                        scale = page_width / total_width
+                        col_widths = [max(15, int(w * scale)) for w in col_widths]
                     
                     pdf.set_font('Helvetica', 'B', 8)
                     pdf.set_fill_color(74, 105, 189)
                     pdf.set_text_color(255, 255, 255)
-                    for h in table_headers:
-                        h = sanitize_text(str(h))[:15]
-                        pdf.cell(col_w, 7, h, border=1, fill=True, align='C')
+                    for i, h in enumerate(table_headers):
+                        h = sanitize_text(str(h))[:25]
+                        w = col_widths[i] if i < len(col_widths) else 25
+                        pdf.cell(w, 7, h, border=1, fill=True, align='C')
                     pdf.ln()
                     
                     pdf.set_font('Helvetica', '', 8)
                     pdf.set_text_color(51, 51, 51)
-                    for row in table_rows:
-                        pdf.set_fill_color(249, 249, 249)
-                        for c in row:
-                            c = sanitize_text(str(c))[:15]
-                            pdf.cell(col_w, 6, c, border=1, fill=True)
+                    for row_idx, row in enumerate(table_rows):
+                        if row_idx % 2 == 0:
+                            pdf.set_fill_color(249, 249, 249)
+                        else:
+                            pdf.set_fill_color(255, 255, 255)
+                        for i, c in enumerate(row):
+                            c = sanitize_text(str(c))[:25]
+                            w = col_widths[i] if i < len(col_widths) else 25
+                            pdf.cell(w, 6, c, border=1, fill=True)
                         pdf.ln()
                     pdf.ln(3)
                     
@@ -351,23 +415,45 @@ def convert_md_to_pdf(input_file: str, output_file: str = None) -> str:
     if in_table and table_headers:
         try:
             num_cols = len(table_headers)
-            col_w = min(30, 180 // max(num_cols, 1))
+            page_width = 180
+            
+            # Calculate max content length for each column
+            col_max_lens = [len(sanitize_text(str(h))) for h in table_headers]
+            for row in table_rows:
+                for i, c in enumerate(row):
+                    if i < len(col_max_lens):
+                        col_max_lens[i] = max(col_max_lens[i], len(sanitize_text(str(c))))
+            
+            # Calculate proportional widths
+            total_chars = sum(col_max_lens) or 1
+            col_widths = [max(20, min(60, int(page_width * (l / total_chars)))) for l in col_max_lens]
+            
+            # Adjust to fit page
+            total_width = sum(col_widths)
+            if total_width > page_width:
+                scale = page_width / total_width
+                col_widths = [max(15, int(w * scale)) for w in col_widths]
             
             pdf.set_font('Helvetica', 'B', 8)
             pdf.set_fill_color(74, 105, 189)
             pdf.set_text_color(255, 255, 255)
-            for h in table_headers:
-                h = sanitize_text(str(h))[:15]
-                pdf.cell(col_w, 7, h, border=1, fill=True, align='C')
+            for i, h in enumerate(table_headers):
+                h = sanitize_text(str(h))[:25]
+                w = col_widths[i] if i < len(col_widths) else 25
+                pdf.cell(w, 7, h, border=1, fill=True, align='C')
             pdf.ln()
             
             pdf.set_font('Helvetica', '', 8)
             pdf.set_text_color(51, 51, 51)
-            for row in table_rows:
-                pdf.set_fill_color(249, 249, 249)
-                for c in row:
-                    c = sanitize_text(str(c))[:15]
-                    pdf.cell(col_w, 6, c, border=1, fill=True)
+            for row_idx, row in enumerate(table_rows):
+                if row_idx % 2 == 0:
+                    pdf.set_fill_color(249, 249, 249)
+                else:
+                    pdf.set_fill_color(255, 255, 255)
+                for i, c in enumerate(row):
+                    c = sanitize_text(str(c))[:25]
+                    w = col_widths[i] if i < len(col_widths) else 25
+                    pdf.cell(w, 6, c, border=1, fill=True)
                 pdf.ln()
         except Exception as e:
             print(f"Warning: Error writing table: {e}")
